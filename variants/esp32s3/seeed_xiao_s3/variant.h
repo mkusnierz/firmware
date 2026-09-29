@@ -37,7 +37,7 @@ L76K GPS Module Information : https://www.seeedstudio.com/L76K-GNSS-Module-for-S
 #define BUTTON_NEED_PULLUP
 
 #define BATTERY_PIN 2
-#define ADC_CHANNEL ADC1_GPIO2_CHANNEL
+#define ADC_CHANNEL ADC1_CHANNEL_1
 #define BATTERY_SENSE_RESOLUTION_BITS 12
 
 /*Warning:
