@@ -262,6 +262,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TCA8418_KB_ADDR 0x34
 #define TSTC8_KB_ADDR 0x6C // STC8H companion-MCU keypad on the ThinkNode-M9
 
+// CHA-10 Chatboard (Ericsson) - UART serial AT command keyboard
+// Set to 1 in variant.h to enable
+#define INPUTBROKER_CHA10_TYPE 0
+
 // -----------------------------------------------------------------------------
 // SENSOR
 // -----------------------------------------------------------------------------

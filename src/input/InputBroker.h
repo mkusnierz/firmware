@@ -96,3 +96,6 @@ class InputBroker : public Observable<const InputEvent *>
 
 extern InputBroker *inputBroker;
 extern bool runASAP;
+
+class CHA10KeyboardImpl;
+extern CHA10KeyboardImpl *cha10KeyboardImpl;

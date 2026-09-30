@@ -16,6 +16,7 @@
 #endif
 
 #if !MESHTASTIC_EXCLUDE_INPUTBROKER
+#include "input/CHA10KeyboardImpl.h"
 #include "input/ExpressLRSFiveWay.h"
 #include "input/RotaryEncoderImpl.h"
 #include "input/RotaryEncoderInterruptImpl1.h"
@@ -481,7 +482,11 @@ void InputBroker::Init()
 #ifdef INPUTBROKER_SERIAL_TYPE
         aSerialKeyboardImpl = new SerialKeyboardImpl();
         aSerialKeyboardImpl->init();
-#endif // INPUTBROKER_MATRIX_TYPE
+#endif // INPUTBROKER_SERIAL_TYPE
+#ifdef INPUTBROKER_CHA10_TYPE
+        cha10KeyboardImpl = new CHA10KeyboardImpl();
+        cha10KeyboardImpl->init();
+#endif // INPUTBROKER_CHA10_TYPE
     }
 #endif // HAS_BUTTON
 #if ARCH_PORTDUINO

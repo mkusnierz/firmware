@@ -36,8 +36,8 @@ L76K GPS Module Information : https://www.seeedstudio.com/L76K-GNSS-Module-for-S
 #define BUTTON_PIN 21 // This is the Program Button
 #define BUTTON_NEED_PULLUP
 
-#define BATTERY_PIN -1
-#define ADC_CHANNEL ADC_CHANNEL_0
+#define BATTERY_PIN 2
+#define ADC_CHANNEL ADC1_CHANNEL_1
 #define BATTERY_SENSE_RESOLUTION_BITS 12
 
 /*Warning:
@@ -55,6 +55,16 @@ L76K GPS Module Information : https://www.seeedstudio.com/L76K-GNSS-Module-for-S
 #define PIN_SERIAL1_TX PIN_GPS_RX
 #define PIN_GPS_STANDBY 1
 #endif
+
+// CHA-10 Chatboard (Ericsson) - UART serial keyboard
+// Connect to Xiao Expansion Board D6/D7 (GPIO6/GPIO7) using UART2
+// Uncomment to enable:
+#define INPUTBROKER_CHA10_TYPE 1
+#define CHA10_UART_RX 6
+#define CHA10_UART_TX 7
+#define CHA10_UART_NUM 2
+#define CHA10_BAUD_RATE 9600
+#define HAS_PHYSICAL_KEYBOARD 1
 
 // XIAO S3 Expansion board  has 1.3 inch OLED Screen
 #define USCREEN_SSD1306
