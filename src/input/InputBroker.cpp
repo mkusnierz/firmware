@@ -28,6 +28,9 @@
 #include "input/cardKbI2cImpl.h"
 #endif
 #include "input/kbMatrixImpl.h"
+#ifdef XBOX_CHATPAD_ENABLED
+#include "input/XboxChatpadKeyboardImpl.h"
+#endif
 #endif
 
 #if HAS_BUTTON || defined(ARCH_PORTDUINO)
@@ -396,6 +399,10 @@ void InputBroker::Init()
         aSerialKeyboardImpl = new SerialKeyboardImpl();
         aSerialKeyboardImpl->init();
 #endif // INPUTBROKER_MATRIX_TYPE
+#ifdef XBOX_CHATPAD_ENABLED
+        xboxChatpadKeyboardImpl = new XboxChatpadKeyboardImpl();
+        xboxChatpadKeyboardImpl->init();
+#endif
     }
 #endif // HAS_BUTTON
 #if ARCH_PORTDUINO

@@ -87,3 +87,12 @@ L76K GPS Module Information : https://www.seeedstudio.com/L76K-GNSS-Module-for-S
 #define SX126X_TXEN RADIOLIB_NC
 #define SX126X_DIO3_TCXO_VOLTAGE 1.8
 #endif
+
+// Xbox 360 Chatpad support (optional, enable with -D XBOX_CHATPAD_ENABLED)
+// Connect chatpad DATA_TX to GPIO1 (RX), DATA_RX to GPIO2 (TX) on expansion header
+// Chatpad VCC to 3V3, GND to GND
+#ifdef XBOX_CHATPAD_ENABLED
+#define XBOX_CHATPAD_UART_NUM 1  // UART1 (UART0=USB console)
+#define XBOX_CHATPAD_RX_PIN 1    // GPIO1 - expansion header pin
+#define XBOX_CHATPAD_TX_PIN 2    // GPIO2 - expansion header pin
+#endif
