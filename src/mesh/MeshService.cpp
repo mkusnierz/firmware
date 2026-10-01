@@ -100,7 +100,7 @@ int MeshService::handleFromRadio(const meshtastic_MeshPacket *mp)
         //  ignore our request for its NodeInfo
     } else if (mp->which_payload_variant == meshtastic_MeshPacket_decoded_tag &&
                !nodeInfoLiteHasUser(nodeDB->getMeshNode(mp->from)) && nodeInfoModule && !isPreferredRebroadcaster &&
-               !nodeDB->isFull()) {
+               nodeDB->isHalfEmpty()) {
         if (airTime->isTxAllowedChannelUtil(true)) {
             const int8_t hopsUsed = getHopsAway(*mp, config.lora.hop_limit);
             if (hopsUsed > (int32_t)(config.lora.hop_limit + 2)) {
@@ -123,8 +123,12 @@ int MeshService::handleFromRadio(const meshtastic_MeshPacket *mp)
     }
 
     printPacket("Forwarding to phone", mp);
-    if (auto *toPhone = packetPool.allocCopy(*mp))
+    if (auto *toPhone = packetPool.allocCopy(*mp)) {
+        // Also overwrites whatever value arrived with the packet.
+        toPhone->ack_proof_status =
+            router ? router->ackProofStatusFor(*mp) : meshtastic_MeshPacket_AckProofStatus_ACK_PROOF_ABSENT;
         sendToPhone(toPhone);
+    }
 
     return 0;
 }
@@ -138,9 +142,15 @@ void MeshService::loop()
             (void)sendQueueStatusToPhone(qs, 0, 0);
     }
     if (oldFromNum != fromNum) { // We don't want to generate extra notifies for multiple new packets
-        int result = fromNumChanged.notifyObservers(fromNum);
-        if (result == 0) // If any observer returns non-zero, we will try again
-            oldFromNum = fromNum;
+        // Snapshot both first: the identity move can run on another task, and anything it bumps during
+        // the pass must still be pending afterwards rather than being marked delivered.
+        const uint32_t num = fromNum;
+        const uint32_t generation = identityGeneration;
+        int result = fromNumChanged.notifyObservers(num);
+        if (result == 0) { // If any observer returns non-zero, we will try again
+            oldFromNum = num;
+            identityGenerationSeen = generation;
+        }
     }
 }
 
@@ -157,6 +167,10 @@ void MeshService::reloadConfig(int saveWhat)
         nodeDB->resetRadioConfig(); // Don't let the phone send us fatally bad settings
 
         configChanged.notifyObservers(NULL); // This will cause radio hardware to change freqs etc
+
+        // Nothing is swept and nothing extra persisted: each node carries the slot it was heard on, so
+        // a client rolling through presets just moves this and moves it back.
+        nodeDB->refreshCommittedLoraSlot();
     }
     nodeDB->saveToDisk(saveWhat);
 }
@@ -298,6 +312,7 @@ void MeshService::handleToRadio(meshtastic_MeshPacket &p)
     p.from = 0;                          // We don't let clients assign nodenums to their sent messages
     p.next_hop = NO_NEXT_HOP_PREFERENCE; // We don't let clients assign next_hop to their sent messages
     p.relay_node = NO_RELAY_NODE;        // We don't let clients assign relay_node to their sent messages
+    p.ack_proof_status = meshtastic_MeshPacket_AckProofStatus_ACK_PROOF_ABSENT; // Only our own ack verification sets it
 
     if (p.id == 0)
         p.id = generatePacketId(); // If the phone didn't supply one, then pick one
